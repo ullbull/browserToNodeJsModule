@@ -1,6 +1,6 @@
-const helpers = require('./_helpers.js');
-const blockModule = require('./_block.js');
-const api = require('./api.js');
+const helpers = require('./_helpers_njs.js');
+const blockModule = require('./_block_njs.js');
+const api = require('./api_njs.js');
 
 function addBlockTo(blockData, block) {
   const blockCopy = helpers.copyObject(block);
@@ -130,7 +130,7 @@ function deleteGridPointFrom(blockData, x, y) {
   delete blockData.gridPoints[key];
 }
 
-export {
+module.exports = {
   addBlockTo,
   addMultipleBlocksTo,
   addBlockAndChildrenTo,

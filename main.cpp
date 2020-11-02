@@ -3,8 +3,7 @@
 #include <string.h>
 using namespace std;
 
-// void getNewFileName(string& fileName);
-void getNewFileName(string &fileName, string &newFileName, string &suffix);
+string getNewFileName(string fileName, string suffix);
 
 int getWordsInString(string str, string words[]) {
   char c;
@@ -43,6 +42,39 @@ bool stringBeginWith(string phrase, string str) {
   return true;
 }
 
+string findFileNameInPath(string path) {
+  char c;
+  for (int i = path.length(); i > 0; i--) {
+    c = path[i];
+    if (c == '/') {
+      return path.substr(i + 1, path.length() - 1 - i - 1);
+    }
+  }
+
+  throw(path);
+  return path;
+}
+
+string getNewModulePath(string path, string suffix) {
+  string fileName;
+  char c;
+  int i = path.length();
+  for (; i > 0; i--) {
+    c = path[i];
+    if (c == '/') {
+      fileName = path.substr(i + 1, path.length() - 1 - i - 1);
+      break;
+    }
+  }
+  if (i == 0 || path[0] != '\'' || path[path.length() - 1] != '\'') {
+    throw("Invalid path!");
+  }
+
+  string newFileName = getNewFileName(fileName, suffix);
+
+  return path.substr(0, i + 1) + newFileName + "'";
+}
+
 int main(int argc, char *argv[]) {
   // if (argc == 1) {
   //   cout << "Oops! You didn't give me a file to work on." << endl;
@@ -50,22 +82,26 @@ int main(int argc, char *argv[]) {
 
   // }
 
+  cout << "Let's go!" << endl;
+
   string inFileName = "testfile.js";
-  string outFileName = "testfile_nodeJs.js";
+  string suffix = "_njs";
+  string outFileName = getNewFileName(inFileName, suffix);
 
   ifstream readFile(inFileName);
   ofstream writeFile(outFileName);
 
-  string phrase = "import * as";
+  string importPhrase = "import * as";
+  string exportPhrase = "export {";
   string line;
-  // getline(readFile, line);
 
   string words[20];
   int length;
   string moduleName;
   string modulePath;
+  string newModulePath;
   while (getline(readFile, line)) {
-    if (stringBeginWith(phrase, line)) {
+    if (stringBeginWith(importPhrase, line)) {
       length = getWordsInString(line, words);
       if (length < 5) {
         // This shouldn't happen
@@ -74,7 +110,18 @@ int main(int argc, char *argv[]) {
       }
       moduleName = words[3];
       modulePath = words[5];
-      line = "const " + moduleName + " = require(" + modulePath + ");";
+      newModulePath = getNewModulePath(modulePath, suffix);
+      line = "const " + moduleName + " = require(" + newModulePath + ");";
+    } else {
+      if (stringBeginWith(exportPhrase, line)) {
+        length = getWordsInString(line, words);
+        if (length < 2) {
+          // This shouldn't happen
+          cout << "ERROR!!!" << endl;
+          exit(1);
+        }
+        line = "module.exports = {";
+      }
     }
 
     writeFile << line << endl;
@@ -106,14 +153,26 @@ int main(int argc, char *argv[]) {
   // cout << words[i] << endl;
   // }
 
+  // string newFileName;
+  // getNewFileName("apan.js", "_mod", newFileName);
+  // cout << newFileName << endl;
+
   return 0;
 }
 
-void getNewFileName(string &fileName, string &newFileName, string &suffix) {
-  string delimiter = ".";
-  int pos = fileName.find(delimiter);
-  suffix = (pos != -1) ? fileName.substr(pos) : "";
-  string nameExSuffix = fileName.substr(0, pos);
-  newFileName = nameExSuffix + "_copy" + suffix;
-  cout << newFileName << endl;
+string getNewFileName(string fileName, string suffix) {
+  string fileExtension;
+  string fileNameNoExtension;
+  char c;
+  int position = fileName.length();
+  for (int i = fileName.length(); i > 0; i--) {
+    c = fileName[i];
+    if (c == '.') {
+      position = i;
+      break;
+    }
+  }
+  fileExtension = fileName.substr(position);
+  fileNameNoExtension = fileName.substr(0, position);
+  return fileNameNoExtension + suffix + fileExtension;
 }
