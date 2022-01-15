@@ -3,6 +3,8 @@
     "*.cpp": "cpp",
     "fstream": "cpp",
     "iostream": "cpp",
-    "ostream": "cpp"
-  }
+    "ostream": "cpp",
+    "xstring": "cpp",
+    "iosfwd": "cpp"
+}
 }

@@ -4,6 +4,22 @@
 using namespace std;
 
 string getNewFileName(string fileName, string suffix);
+string getNewFileName(string fileName, string suffix) {
+  string fileExtension;
+  string fileNameNoExtension;
+  char c;
+  int position = fileName.length();
+  for (int i = fileName.length(); i > 0; i--) {
+    c = fileName[i];
+    if (c == '.') {
+      position = i;
+      break;
+    }
+  }
+  fileExtension = fileName.substr(position);
+  fileNameNoExtension = fileName.substr(0, position);
+  return fileNameNoExtension + suffix + fileExtension;
+}
 
 int getWordsInString(string str, string words[]) {
   char c;
@@ -76,17 +92,15 @@ string getNewModulePath(string path, string suffix) {
 }
 
 int main(int argc, char *argv[]) {
-  // if (argc == 1) {
-  //   cout << "Oops! You didn't give me a file to work on." << endl;
-  // } else {
-
-  // }
-
-  cout << "Let's go!" << endl;
-
-  string inFileName = "testfile.js";
+  if (argc == 1) {
+    cout << "Oops! You didn't give me a file to work on." << endl;
+    exit(1);
+  }
+  string inFileName = argv[1];
   string suffix = "_njs";
+  if (argc == 3) suffix = argv[2];
   string outFileName = getNewFileName(inFileName, suffix);
+  cout << "Let's go!" << endl;
 
   ifstream readFile(inFileName);
   ofstream writeFile(outFileName);
@@ -130,49 +144,5 @@ int main(int argc, char *argv[]) {
   readFile.close();
   writeFile.close();
 
-  ////////////////TEST//////////
-  // string str1 = "hej";
-  // string str2 = "hej";
-
-  // if (str1 == str2) {
-  //   cout << "lika" << endl;
-  // } else {
-  //   cout << "olika" << endl;
-  // }
-
-  // string w1 = "w1";
-  // string w2 = "w2";
-  // string w3 = "w3";
-  // // string words[10] = {w1, w2, w3};
-  // int i1 = 1;
-  // int i2 = 2;
-  // int i3 = 3;
-  // int ints[10] = {i1, i2, i3};
-
-  // for (int i = 0; i < 3; i++) {
-  // cout << words[i] << endl;
-  // }
-
-  // string newFileName;
-  // getNewFileName("apan.js", "_mod", newFileName);
-  // cout << newFileName << endl;
-
   return 0;
-}
-
-string getNewFileName(string fileName, string suffix) {
-  string fileExtension;
-  string fileNameNoExtension;
-  char c;
-  int position = fileName.length();
-  for (int i = fileName.length(); i > 0; i--) {
-    c = fileName[i];
-    if (c == '.') {
-      position = i;
-      break;
-    }
-  }
-  fileExtension = fileName.substr(position);
-  fileNameNoExtension = fileName.substr(0, position);
-  return fileNameNoExtension + suffix + fileExtension;
 }
